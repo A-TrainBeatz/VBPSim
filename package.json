@@ -1,8 +1,7 @@
 {
   "name": "VBPSim",
   "version": "1.0.0",
-  "description": "VoxelBox Powder Simulator (2D / 3D)",
-  "main": "server.js",
+  "private": true,
   "scripts": {
     "start": "node server.js"
   },
