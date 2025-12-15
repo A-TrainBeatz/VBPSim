@@ -1,46 +1,39 @@
 let currentMode = null;
-let active = "2D";
+let activeMode = "2D";
 
-function bootMode() {
-  currentMode = active === "2D"
-    ? new Mode2D()
-    : new Mode3D();
+function setup() {
+  pixelDensity(1);
+  switchMode();
+}
 
-  currentMode.init();
+function draw() {
+  if (currentMode?.draw) currentMode.draw();
 }
 
 function switchMode() {
   if (currentMode) currentMode.shutdown();
-  active = active === "2D" ? "3D" : "2D";
-  bootMode();
+
+  activeMode = activeMode === "2D" ? "3D" : "2D";
+  currentMode = activeMode === "2D" ? new Mode2D() : new Mode3D();
+  currentMode.init();
 }
 
-/* ---- p5 hooks (FORCED GLOBAL) ---- */
-
-window.setup = function () {
-  pixelDensity(1);
-  bootMode();
-};
-
-window.draw = function () {
-  if (currentMode && currentMode.draw) {
-    currentMode.draw();
+function keyPressed() {
+  if (key === "k" || key === "K") {
+    switchMode();
+    return;
   }
-};
-
-window.keyPressed = function () {
-  if (key === "k" || key === "K") switchMode();
   currentMode?.keyPressed?.(key);
-};
+}
 
-window.mousePressed = function () {
+function mousePressed() {
   currentMode?.mousePressed?.();
-};
+}
 
-window.mouseDragged = function () {
+function mouseDragged() {
   currentMode?.mouseDragged?.();
-};
+}
 
-function setup() {
-  switchMode(); // start in 2D
+function windowResized() {
+  currentMode?.resize?.();
 }
