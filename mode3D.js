@@ -6,10 +6,16 @@ class Mode3D {
   }
 
   init() {
+    preloadFont(); // ensure font loaded
     this.canvas = createCanvas(windowWidth, windowHeight, WEBGL);
     noSmooth();
+    textFont(simFont);
     this.initWorld();
   }
+
+  // ... rest of class unchanged
+}
+
 
   shutdown() {
     if (this.canvas) this.canvas.remove();
