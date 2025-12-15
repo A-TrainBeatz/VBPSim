@@ -7,12 +7,11 @@ function setup() {
 }
 
 function draw() {
-  if (currentMode?.draw) currentMode.draw();
+  currentMode?.draw?.();
 }
 
 function switchMode() {
   if (currentMode) currentMode.shutdown();
-
   activeMode = activeMode === "2D" ? "3D" : "2D";
   currentMode = activeMode === "2D" ? new Mode2D() : new Mode3D();
   currentMode.init();
