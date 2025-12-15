@@ -4,9 +4,11 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static(path.join(__dirname)));
+// Serve static files FIRST
+app.use(express.static(__dirname));
 
-app.get("*", (_, res) => {
+// Only fallback for unknown routes (not files)
+app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
