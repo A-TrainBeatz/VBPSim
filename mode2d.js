@@ -1,62 +1,75 @@
-// ============================
-// 2D MODE — STATE
-// ============================
-let cell2D = 8;
-let worldW2D, worldH2D;
-let worldFG2D = [];
-let worldBG2D = [];
-let physicsTPS2D = 30;
-let lastTick2D = 0;
-
-// ============================
-// 2D MODE — LIFECYCLE
-// ============================
-function start2D() {
-  createCanvas(windowWidth, windowHeight);
-  noSmooth();
-  rebuild2D();
-}
-
-function shutdown2D() {
-  remove(); // destroys canvas cleanly
-}
-
-function draw2D() {
-  background(0);
-
-  let now = millis();
-  if (now - lastTick2D > 1000 / physicsTPS2D) {
-    physics2D();
-    lastTick2D = now;
+class Mode2D {
+  constructor() {
+    this.cell = 8;
+    this.physicsTPS = 30;
+    this.lastTick = 0;
   }
 
-  render2D();
-}
+  init() {
+    this.canvas = createCanvas(windowWidth, windowHeight);
+    noSmooth();
+    this.rebuild();
+  }
 
-// ============================
-// INPUT
-// ============================
-function keyPressed2D() {
-  // all your existing 2D keys EXCEPT K
-}
+  shutdown() {
+    this.canvas.remove();
+  }
 
-function mousePressed2D() { handlePaint2D(); }
-function mouseDragged2D() { handlePaint2D(); }
+  rebuild() {
+    this.w = floor(width / this.cell);
+    this.h = floor(height / this.cell);
+    this.world = Array.from({ length: this.h }, () =>
+      Array(this.w).fill(null)
+    );
+  }
 
-// ============================
-// WORLD / PHYSICS / RENDER
-// ============================
-function rebuild2D() {
-  worldW2D = floor(width / cell2D);
-  worldH2D = floor(height / cell2D);
-  worldFG2D = Array.from({ length: worldH2D }, () => Array(worldW2D).fill(null));
-  worldBG2D = Array.from({ length: worldH2D }, () => Array(worldW2D).fill(null));
-}
+  mousePressed() {
+    this.paint();
+  }
 
-function physics2D() {
-  // unchanged physicsLayer logic
-}
+  mouseDragged() {
+    this.paint();
+  }
 
-function render2D() {
-  // unchanged rect-based rendering
+  paint() {
+    let x = floor(mouseX / this.cell);
+    let y = floor(mouseY / this.cell);
+    if (x >= 0 && y >= 0 && x < this.w && y < this.h) {
+      this.world[y][x] = "sand";
+    }
+  }
+
+  physics() {
+    for (let y = this.h - 1; y >= 0; y--) {
+      for (let x = 0; x < this.w; x++) {
+        if (this.world[y][x] === "sand" && y + 1 < this.h && !this.world[y + 1][x]) {
+          this.world[y][x] = null;
+          this.world[y + 1][x] = "sand";
+        }
+      }
+    }
+  }
+
+  draw() {
+    background(0);
+
+    let now = millis();
+    if (now - this.lastTick > 1000 / this.physicsTPS) {
+      this.physics();
+      this.lastTick = now;
+    }
+
+    noStroke();
+    fill(210, 180, 80);
+    for (let y = 0; y < this.h; y++) {
+      for (let x = 0; x < this.w; x++) {
+        if (this.world[y][x]) {
+          rect(x * this.cell, y * this.cell, this.cell, this.cell);
+        }
+      }
+    }
+
+    fill(255);
+    text("2D MODE (Press K)", 10, 20);
+  }
 }
