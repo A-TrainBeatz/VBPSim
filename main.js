@@ -1,42 +1,40 @@
-let currentMode = "2D"; // "2D" or "3D"
+let currentMode = null;
+let active = "2D";
 
-function setup() {
-  start2D();
-}
+function switchMode() {
+  if (currentMode) currentMode.shutdown();
 
-function draw() {
-  if (currentMode === "2D") draw2D();
-  else draw3D();
+  active = active === "2D" ? "3D" : "2D";
+
+  currentMode = active === "2D"
+    ? new Mode2D()
+    : new Mode3D();
+
+  currentMode.init();
 }
 
 function keyPressed() {
   if (key === "k" || key === "K") {
     switchMode();
-    return;
   }
 
-  if (currentMode === "2D") keyPressed2D();
-  else keyPressed3D();
+  if (currentMode?.keyPressed) {
+    currentMode.keyPressed(key);
+  }
 }
 
 function mousePressed() {
-  if (currentMode === "2D") mousePressed2D();
-  else mousePressed3D();
+  currentMode?.mousePressed?.();
 }
 
 function mouseDragged() {
-  if (currentMode === "2D") mouseDragged2D();
-  else mouseDragged3D();
+  currentMode?.mouseDragged?.();
 }
 
-function switchMode() {
-  if (currentMode === "2D") {
-    shutdown2D();
-    start3D();
-    currentMode = "3D";
-  } else {
-    shutdown3D();
-    start2D();
-    currentMode = "2D";
-  }
+function draw() {
+  currentMode?.draw?.();
+}
+
+function setup() {
+  switchMode(); // start in 2D
 }
