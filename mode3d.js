@@ -2,6 +2,7 @@ class Mode3D {
   constructor() {
     this.cell = 16;
     this.size = 16;
+    this.world = [];
   }
 
   init() {
@@ -11,7 +12,7 @@ class Mode3D {
   }
 
   shutdown() {
-    this.canvas.remove();
+    if (this.canvas) this.canvas.remove();
   }
 
   resize() {
@@ -20,9 +21,7 @@ class Mode3D {
 
   initWorld() {
     this.world = Array.from({ length: this.size }, () =>
-      Array.from({ length: this.size }, () =>
-        Array(this.size).fill(false)
-      )
+      Array.from({ length: this.size }, () => Array(this.size).fill(false))
     );
   }
 
@@ -36,21 +35,16 @@ class Mode3D {
   draw() {
     background(0);
     orbitControl();
-
     rotateX(-0.6);
     rotateY(0.7);
 
-    for (let z = 0; z < this.size; z++) {
-      for (let y = 0; y < this.size; y++) {
-        for (let x = 0; x < this.size; x++) {
-          if (!this.world[z][y][x]) continue;
+    for (let z=0; z<this.size; z++){
+      for (let y=0; y<this.size; y++){
+        for(let x=0;x<this.size;x++){
+          if(!this.world[z][y][x]) continue;
           push();
-          translate(
-            (x - this.size / 2) * this.cell,
-            (y - this.size / 2) * this.cell,
-            (z - this.size / 2) * this.cell
-          );
-          fill(210, 180, 80);
+          translate((x-this.size/2)*this.cell,(y-this.size/2)*this.cell,(z-this.size/2)*this.cell);
+          fill(210,180,80);
           box(this.cell);
           pop();
         }
@@ -60,6 +54,6 @@ class Mode3D {
     resetMatrix();
     fill(255);
     textSize(16);
-    text("3D MODE — Click to place voxels | Press K for 2D", -width / 2 + 10, -height / 2 + 24);
+    text("3D MODE — Click to place voxels | Press K for 2D",-width/2+10,-height/2+24);
   }
 }
