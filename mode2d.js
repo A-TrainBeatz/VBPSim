@@ -12,7 +12,7 @@ class Mode2D {
   }
 
   shutdown() {
-    this.canvas.remove();
+    if (this.canvas) this.canvas.remove();
   }
 
   resize() {
@@ -23,18 +23,11 @@ class Mode2D {
   rebuild() {
     this.w = floor(width / this.cell);
     this.h = floor(height / this.cell);
-    this.world = Array.from({ length: this.h }, () =>
-      Array(this.w).fill(null)
-    );
+    this.world = Array.from({ length: this.h }, () => Array(this.w).fill(null));
   }
 
-  mousePressed() {
-    this.paint();
-  }
-
-  mouseDragged() {
-    this.paint();
-  }
+  mousePressed() { this.paint(); }
+  mouseDragged() { this.paint(); }
 
   paint() {
     const x = floor(mouseX / this.cell);
@@ -47,9 +40,9 @@ class Mode2D {
   physics() {
     for (let y = this.h - 2; y >= 0; y--) {
       for (let x = 0; x < this.w; x++) {
-        if (this.world[y][x] === "sand" && !this.world[y + 1][x]) {
+        if (this.world[y][x] === "sand" && !this.world[y+1][x]) {
           this.world[y][x] = null;
-          this.world[y + 1][x] = "sand";
+          this.world[y+1][x] = "sand";
         }
       }
     }
@@ -58,34 +51,30 @@ class Mode2D {
   draw() {
     background(20);
 
-    const now = millis();
-    if (now - this.lastTick > 1000 / this.physicsTPS) {
+    if (millis() - this.lastTick > 1000 / this.physicsTPS) {
       this.physics();
-      this.lastTick = now;
+      this.lastTick = millis();
     }
 
-    // Draw grid (VISIBLE even when empty)
+    // Grid
     stroke(40);
-    for (let x = 0; x < this.w; x++)
-      line(x * this.cell, 0, x * this.cell, height);
-    for (let y = 0; y < this.h; y++)
-      line(0, y * this.cell, width, y * this.cell);
+    for (let x = 0; x < this.w; x++) line(x*this.cell,0,x*this.cell,height);
+    for (let y = 0; y < this.h; y++) line(0,y*this.cell,width,y*this.cell);
 
-    // Draw particles
+    // Particles
     noStroke();
-    for (let y = 0; y < this.h; y++) {
-      for (let x = 0; x < this.w; x++) {
+    for (let y=0;y<this.h;y++){
+      for(let x=0;x<this.w;x++){
         const mat = this.world[y][x];
-        if (!mat) continue;
+        if(!mat) continue;
         const c = MATERIALS[mat].color;
-        fill(c[0], c[1], c[2]);
-        rect(x * this.cell, y * this.cell, this.cell, this.cell);
+        fill(c[0],c[1],c[2]);
+        rect(x*this.cell,y*this.cell,this.cell,this.cell);
       }
     }
 
-    // HUD
     fill(255);
     textSize(16);
-    text("2D MODE — Click to draw sand | Press K for 3D", 10, 24);
+    text("2D MODE — Click to draw sand | Press K for 3D",10,24);
   }
 }
