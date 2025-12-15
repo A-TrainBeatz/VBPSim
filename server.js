@@ -4,10 +4,10 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files FIRST
+// Serve static files (all JS, CSS, fonts, etc.)
 app.use(express.static(__dirname));
 
-// Only fallback for unknown routes (not files)
+// Fallback for root only
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
